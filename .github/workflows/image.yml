@@ -1,0 +1,26 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Update image
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+    paths: [ "ofersadan.omp.json" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install oh-my-posh and export image
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y powershell
+          sudo wget https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/posh-linux-amd64 -O /usr/local/bin/oh-my-posh
+          sudo chmod +x /usr/local/bin/oh-my-posh
+          oh-my-posh --config ofersadan.omp.json config export image --author "Ofer Sadan" --cursor-padding 20 -o example.png
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_options: '--no-verify --signoff'
+          file_pattern: example.png
