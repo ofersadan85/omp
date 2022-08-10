@@ -1,5 +1,6 @@
 # oh-my-posh-theme
 My personal oh-my-posh theme
+![example.png](https://github.com/ofersadan85/oh-my-posh-theme/blob/main/example.png?raw=true)
 
 ## Install oh-my-posh
     winget install JanDeDobbeleer.OhMyPosh -s winget
