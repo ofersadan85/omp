@@ -1,4 +1,4 @@
-# oh-my-posh-theme
+# ofersadan85/omp
 My personal oh-my-posh theme
 ![example.png](https://github.com/ofersadan85/oh-my-posh-theme/blob/main/example.png?raw=true)
 
