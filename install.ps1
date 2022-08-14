@@ -15,4 +15,4 @@ Invoke-WebRequest $theme_src -OutFile $theme_dest
 
 # Download profile
 $profile_src = "https://raw.githubusercontent.com/ofersadan85/oh-my-posh-theme/main/profile.ps1"
-Invoke-WebRequest $theme_src -OutFile $PROFILE
+Invoke-WebRequest $profile_src -OutFile $PROFILE
