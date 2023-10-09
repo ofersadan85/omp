@@ -20,7 +20,7 @@ jobs:
           sudo wget https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/posh-linux-amd64 -O /usr/local/bin/oh-my-posh
           sudo chmod +x /usr/local/bin/oh-my-posh
           oh-my-posh --config ofersadan.omp.json config export image --author "Ofer Sadan" --cursor-padding 20 -o example.png
-      - uses: stefanzweifel/git-auto-commit-action@v4
+      - uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_options: '--no-verify --signoff'
           file_pattern: example.png
