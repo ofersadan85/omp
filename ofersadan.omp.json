@@ -4,19 +4,25 @@
     {
       "segments": [
         {
-          "type": "exit",
+          "type": "status",
           "style": "plain",
-          "foreground": "#ff0000"
-        },        
+          "foreground_templates": [
+            "{{ if .Error }}#ff0000{{ else }}#00ff00{{ end }}"
+          ],
+          "properties": {
+            "always_enabled": true,
+            "status_template": "{{ if eq .Code 0 }}\uf00c{{ else }}\uf071 {{ reason .Code }}{{ end }} {{ .Code }}"
+          }
+        },
         {
-          "type":"sysinfo",
+          "type": "sysinfo",
           "powerline_symbol": "\ue0b0",
-          "foreground": "#50359f",
-          "template":"\uf85a {{ round .PhysicalPercentUsed .Precision }}% ",
+          "foreground": "#a0359f",
+          "template": "  {{ round .PhysicalPercentUsed .Precision }}% ",
           "properties": {
             "precision": 2
           },
-          "style":"plain"
+          "style": "plain"
         },
         {
           "foreground": "#00C5C7",
@@ -41,6 +47,18 @@
             "charging_icon": "\uE234 ",
             "charged_icon": "\uE22F "
           }
+        },
+        {
+          "type": "executiontime",
+          "style": "plain",
+          "powerline_symbol": "",
+          "foreground": "#ffafaf",
+          "template": "  {{ .FormattedMs }} ",
+          "properties": {
+            "threshold": 500,
+            "style": "austin",
+            "always_enabled": true
+          }
         }
       ],
       "type": "rprompt"
@@ -60,7 +78,7 @@
             "style": "unique"
           },
           "style": "plain",
-          "template": "{{ .Path }} ",
+          "template": " {{ .Path }} ",
           "type": "path"
         },
         {

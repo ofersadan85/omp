@@ -1,6 +1,5 @@
 # Install modules
 Install-Module posh-git
-Install-Module Terminal-Icons
 Install-Module DockerCompletion
 Install-Module DockerComposeCompletion
 
