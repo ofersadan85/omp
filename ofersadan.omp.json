@@ -4,6 +4,14 @@
     {
       "segments": [
         {
+          "type": "project",
+          "style": "powerline",
+          "powerline_symbol": "\uE0B0",
+          "foreground": "#193549",
+          "background": "#ffeb3b",
+          "template": " {{ if .Error }}{{ .Error }}{{ else }}{{ if .Version }} {{.Version}}{{ end }} {{ if .Name }}{{ .Name }}{{ end }}{{ end }} "
+        },
+        {
           "type": "status",
           "style": "plain",
           "foreground_templates": [
@@ -51,14 +59,18 @@
         {
           "type": "executiontime",
           "style": "plain",
-          "powerline_symbol": "",
           "foreground": "#ffafaf",
-          "template": "  {{ .FormattedMs }} ",
+          "template": "  {{ .FormattedMs }}",
           "properties": {
             "threshold": 500,
             "style": "austin",
             "always_enabled": true
           }
+        },
+        {
+          "type": "connection",
+          "style": "plain",
+          "foreground": "#8822ee"
         }
       ],
       "type": "rprompt"
@@ -78,13 +90,13 @@
             "style": "unique"
           },
           "style": "plain",
-          "template": " {{ .Path }} ",
+          "template": " {{ path .Path .Location }} ",
           "type": "path"
         },
         {
           "foreground": "#FFE700",
           "style": "plain",
-          "template": "{{ .UpstreamIcon }}{{ .HEAD }}{{ .BranchStatus }}{{ if .Working.Changed }} \uf044 {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }} \uf046 {{ .Staging.String }}{{ end }}{{ if gt .StashCount 0 }} \uf692 {{ .StashCount }}{{ end }} ",
+          "template": "{{ url .UpstreamIcon .UpstreamURL }}{{ .HEAD }}{{ .BranchStatus }}{{ if .Working.Changed }} \uf044 {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }} \uf046 {{ .Staging.String }}{{ end }}{{ if gt .StashCount 0 }} \uf692 {{ .StashCount }}{{ end }} ",
           "properties": {
             "fetch_status": true,
             "fetch_stash_count": true,
