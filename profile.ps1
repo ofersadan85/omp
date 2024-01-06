@@ -35,7 +35,7 @@ function codez {
     param (
         [string]$projectName
     )
-    $projectFolder = zi $projectName
+    $projectFolder = zoxide query -i $projectName
     if ($null -eq $projectFolder -or (!(Test-Path -Path $projectFolder))) {
         Write-Host "Project folder not found."
         return
