@@ -41,6 +41,7 @@ function codez {
         return
     }
     code $projectFolder
+    z $projectFolder
 }
 
 function lsz {
