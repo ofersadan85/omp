@@ -2,7 +2,7 @@ Import-Module posh-git
 Import-Module DockerCompletion
 Import-Module DockerComposeCompletion
 
-$omp_config = Join-Path -Path (get-item $PROFILE).Directory.FullName -ChildPath "ofersadan.omp.json"
+$omp_config = Join-Path -Path (get-item $PROFILE).Directory.FullName -ChildPath "ofersadan.omp.yaml"
 oh-my-posh init pwsh --config $omp_config | Invoke-Expression
 
 # PSReadLine

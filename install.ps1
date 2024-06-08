@@ -8,8 +8,8 @@ $profile_parent = (get-item $PROFILE).Directory.FullName
 New-Item -ItemType Directory -Force -Path $profile_parent
 
 # Download theme
-$theme_src = "https://raw.githubusercontent.com/ofersadan85/oh-my-posh-theme/main/ofersadan.omp.json"
-$theme_dest = Join-Path -Path $profile_parent -ChildPath "ofersadan.omp.json"
+$theme_src = "https://raw.githubusercontent.com/ofersadan85/oh-my-posh-theme/main/ofersadan.omp.yaml"
+$theme_dest = Join-Path -Path $profile_parent -ChildPath "ofersadan.omp.yaml"
 Invoke-WebRequest $theme_src -OutFile $theme_dest
 
 # Download profile
