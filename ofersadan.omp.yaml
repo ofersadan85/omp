@@ -31,7 +31,15 @@ blocks:
       - type: git
         style: plain
         foreground: "#FFE700"
-        template: "{{ url .UpstreamIcon .UpstreamURL }}{{ .HEAD }}{{ .BranchStatus }}{{ if .Working.Changed }} \uf044 {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }} \uf046 {{ .Staging.String }}{{ end }}{{ if gt .StashCount 0 }} \uf692 {{ .StashCount }}{{ end }} "
+        templates_logic: join
+        templates:
+          - "{{ url .UpstreamIcon .UpstreamURL }}"
+          - "{{ .HEAD }}"
+          - "{{ .BranchStatus }}"
+          - "{{ if .Working.Changed }} \uf044 {{ .Working.String }}{{ end }}"
+          - "{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}"
+          - "{{ if .Staging.Changed }} \uf046 {{ .Staging.String }}{{ end }}"
+          - "{{ if gt .StashCount 0 }} \uf692 {{ .StashCount }}{{ end }} "
         properties:
           fetch_stash_count: true
           fetch_status: true
@@ -98,7 +106,7 @@ blocks:
       - type: connection
         style: plain
         foreground: "#8822ee"
-        
+
   - type: prompt
     alignment: left
     newline: true
@@ -108,8 +116,7 @@ blocks:
         foreground: "#00FF00"
         template: "❯"
 
-
 transient_prompt:
   foreground_templates:
-    - "{{ if eq .Code 0 }}#FF0000{{ else }}#00FF00{{ end }}"
+    - "{{ if ne .Code 0 }}#FF0000{{ else }}#00FF00{{ end }}"
   template: "❯ "
