@@ -51,7 +51,6 @@ blocks:
     segments:
       - type: project
         style: powerline
-        powerline_symbol: "\ue0bc"
         foreground: "#000000"
         background: "#ffffff"
         template: "{{ if .Error }}{{ .Error }}{{ else }}{{ if .Version }} {{.Version}}{{ end }} {{ index .Var .Type }} {{ if .Name }}{{ .Name }}{{ end }}{{ end }} "
