@@ -4,6 +4,7 @@ Import-Module DockerComposeCompletion
 
 $omp_config = Join-Path -Path (get-item $PROFILE).Directory.FullName -ChildPath "ofersadan.omp.yaml"
 oh-my-posh init pwsh --config $omp_config | Invoke-Expression
+$env:POSH_GIT_ENABLED = $true
 
 # PSReadLine
 Set-PSReadLineOption -EditMode Emacs
