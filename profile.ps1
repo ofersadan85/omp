@@ -7,14 +7,14 @@ oh-my-posh init pwsh --config $omp_config | Invoke-Expression
 
 # PSReadLine
 Set-PSReadLineOption -EditMode Emacs
-Set-PSReadLineOption -PredictionSource History
+Set-PSReadLineOption -PredictionSource HistoryAndPlugin
 
-# Utilities
 function which ($command) {
     Get-Command -Name $command -ErrorAction SilentlyContinue |
     Select-Object -ExpandProperty Path -ErrorAction SilentlyContinue
 }
 
+# Create .gitignore file using Toptal's API
 function gig {
     param(
         [Parameter(Mandatory = $true)]
@@ -65,17 +65,31 @@ function try_alias {
     if (Get-Command $to -ErrorAction SilentlyContinue) {
         # Write-Host "Creating alias: $from -> $to"
         Set-Alias -Name $from -Value $to -Scope Global -Option AllScope -Force
-    } else {
+        return $true
+    }
+    else {
         Write-Host "Command not found: $to"
         Write-Host "Would you like to try searching it in Winget? (y/n)"
         $answer = Read-Host
         if ($answer -eq "y") {
             winget search --disable-interactivity --command $to
         }
+        return $false
     }
 }
 
 # Aliases
-try_alias code code-insiders
-try_alias ls lsd
-try_alias cat bat
+function .. { z .. }
+function ... { z ..\.. }$null = try_alias code code-insiders
+function cpwd { $PWD.Path | Set-Clipboard }  # Copy current path to clipboard
+function gs { git status }
+Set-Alias -Name g -Value git -Scope Global -Option AllScope -Force
+Set-Alias -Name c -Value cargo -Scope Global -Option AllScope -Force
+$null = try_alias cat bat
+$null = try_alias lzg lazygit
+if (try_alias ls lsd) {
+    function l {
+        param()
+        lsd -lA @args
+    }
+}
