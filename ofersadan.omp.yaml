@@ -26,7 +26,7 @@ blocks:
         style: plain
         foreground: "#77E4F7"
         template: " {{ path .Path .Location }} "
-        properties:
+        options:
           style: short
 
       - type: git
@@ -41,11 +41,9 @@ blocks:
           - "{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}"
           - "{{ if .Staging.Changed }} \uf046 {{ .Staging.String }}{{ end }}"
           - "{{ if gt .StashCount 0 }} \uf692 {{ .StashCount }}{{ end }} "
-        properties:
-          fetch_stash_count: true
+        options:
           fetch_status: true
           fetch_upstream_icon: true
-          fetch_worktree_count: true
 
   - type: prompt
     alignment: right
@@ -65,21 +63,21 @@ blocks:
         style: plain
         foreground_templates:
           - "{{ if .Error }}#ff0000{{ else }}#00ff00{{ end }}"
-        properties:
+        options:
           status_template: "{{ if eq .Code 0 }}\uf00c{{ else }}\uf071 {{ reason .Code }}{{ .Code }}{{ end }}"
 
       - type: sysinfo
         style: plain
         foreground: "#a0359f"
         template: " \ue266 {{ round .PhysicalPercentUsed .Precision }}% "
-        properties:
+        options:
           precision: 2.0
 
       - type: time
         style: plain
         foreground: "#00C5C7"
         template: "{{ .CurrentDate | date .Format }}"
-        properties:
+        options:
           time_format: "15:04:05"
 
       - type: battery
@@ -89,7 +87,7 @@ blocks:
           - '{{if eq "Discharging" .State.String}}#ff5722{{end}}'
           - '{{if eq "Full" .State.String}}#4caf50{{end}}'
         template: " {{ if not .Error }}{{ .Icon }}{{ .Percentage }}{{ end }}\uf295 "
-        properties:
+        options:
           charged_icon: "\ue22f "
           charging_icon: "\ue234 "
           discharging_icon: "\ue231 "
@@ -98,7 +96,7 @@ blocks:
         style: plain
         foreground: "#ffafaf"
         template: " \ueba2 {{ .FormattedMs }}"
-        properties:
+        options:
           always_enabled: true
           style: austin
           threshold: 500.0
