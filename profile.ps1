@@ -6,7 +6,6 @@ $omp_config = Join-Path -Path (get-item $PROFILE).Directory.FullName -ChildPath 
 oh-my-posh init pwsh --config $omp_config | Invoke-Expression
 
 # PSReadLine
-Set-PSReadLineOption -EditMode Emacs
 Set-PSReadLineOption -PredictionSource HistoryAndPlugin
 
 function which ($command) {
