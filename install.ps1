@@ -1,7 +1,7 @@
 # Install modules
-Install-Module posh-git
-Install-Module DockerCompletion
-Install-Module DockerComposeCompletion
+Install-Module -Confirm -AcceptLicense posh-git
+Install-Module -Confirm -AcceptLicense DockerCompletion
+Install-Module -Confirm -AcceptLicense DockerComposeCompletion
 
 # Make parent folder
 $profile_parent = (get-item $PROFILE).Directory.FullName
