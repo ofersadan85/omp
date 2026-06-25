@@ -144,14 +144,18 @@ function Install-CargoBinstall {
         return
     }
 
-    if (Resolve-CommandPath "cargo-binstall" @(
-            (Join-Path -Path $HOME -ChildPath ".cargo\\bin\\cargo-binstall.exe"),
-            (Join-Path -Path $HOME -ChildPath ".cargo/bin/cargo-binstall")
-        )) {
+    $cargo_binstall = Resolve-CommandPath "cargo-binstall" @(
+        (Join-Path -Path $HOME -ChildPath ".cargo\\bin\\cargo-binstall.exe"),
+        (Join-Path -Path $HOME -ChildPath ".cargo/bin/cargo-binstall")
+    )
+
+    if ($cargo_binstall) {
+        Write-Host "Updating cargo-binstall"
         & $cargo binstall cargo-binstall --no-confirm
         return
     }
 
+    Write-Host "Installing cargo-binstall"
     & $cargo install cargo-binstall --locked
     Update-SessionPath
 }
@@ -159,14 +163,28 @@ function Install-CargoBinstall {
 function Install-UvTool ($uv, $name) {
     try {
         & $uv tool install $name
+        return
     }
     catch {
-        try { & $uv tool upgrade $name }
-        catch {
-            & $uv tool uninstall $name
-            & $uv tool install $name
-        }
+        Write-Warning "uv tool install failed for ${name}: $($_.Exception.Message)"
     }
+
+    try {
+        & $uv tool upgrade $name
+        return
+    }
+    catch {
+        Write-Warning "uv tool upgrade failed for ${name}: $($_.Exception.Message)"
+    }
+
+    try {
+        & $uv tool uninstall $name
+    }
+    catch {
+        Write-Warning "uv tool uninstall failed for ${name}: $($_.Exception.Message)"
+    }
+
+    & $uv tool install $name
 }
 
 function Install-UvTools {

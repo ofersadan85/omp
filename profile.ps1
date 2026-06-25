@@ -60,7 +60,7 @@ function gd { git diff @args }
 function glog { git log --oneline --decorate --graph @args }
 function gpull { git pull @args }
 function gpush { git push @args }
-function gcleanmerged { git branch --merged | Select-String -NotMatch "^\*|main|master" | ForEach-Object { git branch -d $_.Line.Trim() } }
+function gcleanmerged { git branch --merged | ForEach-Object { $_.ToString().Trim() } | Where-Object { $_ -and $_ -notin @('main', 'master') -and $_ -notmatch "^\*" } | ForEach-Object { git branch -d $_ } }
 function dps { docker ps @args }
 function dcu { docker compose up @args }
 function dcd { docker compose down @args }
