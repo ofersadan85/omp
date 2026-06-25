@@ -128,7 +128,6 @@ try_alias g git
 try_alias c cargo
 try_alias code code-insiders -silent $true
 try_alias cat bat
-try_alias lg lazygit
 try_alias lzg lazygit
 try_alias vi nvim
 try_alias vim nvim

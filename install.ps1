@@ -169,6 +169,26 @@ function Install-CargoBinstall {
 }
 
 function Install-UvTool ($uv, $name) {
+    $installed = $false
+
+    try {
+        $installed = (& $uv tool list) | Select-String -Pattern "^$name\b" -Quiet
+    }
+    catch {
+        Write-Warning "uv tool list failed for ${name}: $($_.Exception.Message)"
+    }
+
+    if ($installed) {
+        try {
+            & $uv tool upgrade $name
+            Write-Host "Upgraded uv tool: $name"
+            return
+        }
+        catch {
+            Write-Warning "uv tool upgrade failed for ${name}: $($_.Exception.Message)"
+        }
+    }
+
     try {
         & $uv tool install $name
         Write-Host "Installed uv tool: $name"
@@ -176,15 +196,6 @@ function Install-UvTool ($uv, $name) {
     }
     catch {
         Write-Warning "uv tool install failed for ${name}: $($_.Exception.Message)"
-    }
-
-    try {
-        & $uv tool upgrade $name
-        Write-Host "Upgraded uv tool: $name"
-        return
-    }
-    catch {
-        Write-Warning "uv tool upgrade failed for ${name}: $($_.Exception.Message)"
     }
 
     try {
