@@ -1,17 +1,196 @@
-# Install modules
-Install-Module posh-git
-Install-Module DockerCompletion
-Install-Module DockerComposeCompletion
+param(
+    [string]$RepoRoot = $PSScriptRoot
+)
 
-# Make parent folder
-$profile_parent = (get-item $PROFILE).Directory.FullName
-New-Item -ItemType Directory -Force -Path $profile_parent
+$ErrorActionPreference = "Stop"
+$ProgressPreference = "SilentlyContinue"
+if ($PSVersionTable.PSVersion.Major -ge 7) { $PSNativeCommandUseErrorActionPreference = $true }
 
-# Download theme
-$theme_src = "https://raw.githubusercontent.com/ofersadan85/oh-my-posh-theme/main/ofersadan.omp.yaml"
-$theme_dest = Join-Path -Path $profile_parent -ChildPath "ofersadan.omp.yaml"
-Invoke-WebRequest $theme_src -OutFile $theme_dest
+$repo_root = if ($RepoRoot -and (Test-Path -Path $RepoRoot)) { (Resolve-Path -Path $RepoRoot).Path } else { $PSScriptRoot }
+$profile_parent = Split-Path -Path $PROFILE -Parent
+$theme_name = "ofersadan.omp.yaml"
+$raw_base = "https://raw.githubusercontent.com/ofersadan85/omp/main"
+$profile_path = Join-Path -Path $repo_root -ChildPath "profile.ps1"
+$theme_path = Join-Path -Path $repo_root -ChildPath $theme_name
+$winget_path = Join-Path -Path $repo_root -ChildPath "winget.json"
 
-# Download profile
-$profile_src = "https://raw.githubusercontent.com/ofersadan85/oh-my-posh-theme/main/profile.ps1"
-Invoke-WebRequest $profile_src -OutFile $PROFILE
+function Write-Step ($message) {
+    Write-Host "`n==> $message" -ForegroundColor Cyan
+}
+
+function Ensure-Directory ($path) {
+    New-Item -ItemType Directory -Force -Path $path | Out-Null
+}
+
+function Update-SessionPath {
+    $machine_path = [Environment]::GetEnvironmentVariable("Path", "Machine")
+    $user_path = [Environment]::GetEnvironmentVariable("Path", "User")
+    $env:Path = (@($machine_path, $user_path) | Where-Object { $_ }) -join ';'
+
+    foreach ($extra_path in @(
+            (Join-Path -Path $HOME -ChildPath ".cargo\\bin"),
+            (Join-Path -Path $HOME -ChildPath ".local\\bin")
+        )) {
+        if ((Test-Path -Path $extra_path) -and ($env:Path -notlike "*$extra_path*")) {
+            $env:Path = "$env:Path;$extra_path"
+        }
+    }
+}
+
+function Resolve-CommandPath ($name, $fallbacks = @()) {
+    $command = Get-Command -Name $name -ErrorAction SilentlyContinue
+    if ($command) { return $command.Source }
+
+    foreach ($fallback in $fallbacks) {
+        if ($fallback -and (Test-Path -Path $fallback)) {
+            return $fallback
+        }
+    }
+
+    return $null
+}
+
+function Install-PowerShellModule ($name) {
+    Write-Step "Installing PowerShell module: $name"
+
+    if (-not (Get-PackageProvider -ListAvailable -Name NuGet -ErrorAction SilentlyContinue)) {
+        Install-PackageProvider -Name NuGet -Force | Out-Null
+    }
+
+    $gallery = Get-PSRepository -Name PSGallery -ErrorAction SilentlyContinue
+    if ($gallery -and $gallery.InstallationPolicy -ne 'Trusted') {
+        Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+    }
+
+    $installed = Get-Module -ListAvailable -Name $name | Sort-Object Version -Descending | Select-Object -First 1
+    if ($installed) {
+        Write-Host "$name already installed ($($installed.Version))"
+        return
+    }
+
+    Install-Module -Name $name -Repository PSGallery -Scope CurrentUser -AllowClobber -Force -SkipPublisherCheck -AcceptLicense
+}
+
+function Import-WingetPackages ($manifest_path) {
+    Write-Step "Importing winget packages"
+
+    $winget = Resolve-CommandPath "winget"
+    if (-not $winget) {
+        Write-Warning "winget was not found. Skipping package import."
+        return
+    }
+
+    if (-not (Test-Path -Path $manifest_path)) {
+        Write-Warning "winget manifest not found at $manifest_path"
+        return
+    }
+
+    & $winget import --accept-package-agreements --accept-source-agreements --disable-interactivity --ignore-unavailable --no-upgrade --import-file $manifest_path
+    Update-SessionPath
+}
+
+function Set-FileLink ($path, $target) {
+    $resolved_target = (Resolve-Path -LiteralPath $target).Path
+    Ensure-Directory (Split-Path -Path $path -Parent)
+
+    $existing = Get-Item -LiteralPath $path -Force -ErrorAction SilentlyContinue
+    if ($existing) {
+        $existing_target = $existing.Target
+        if ($existing_target -is [array]) { $existing_target = $existing_target[0] }
+
+        if ($existing_target) {
+            try { $existing_target = (Resolve-Path -LiteralPath $existing_target).Path }
+            catch { }
+        }
+
+        if ($existing_target -eq $resolved_target) {
+            Write-Host "$path already points to $resolved_target"
+            return
+        }
+
+        Remove-Item -LiteralPath $path -Force
+    }
+
+    New-Item -ItemType SymbolicLink -Path $path -Target $resolved_target -Force | Out-Null
+    Write-Host "$path -> $resolved_target"
+}
+
+function Install-ProfileFiles {
+    Write-Step "Installing profile and theme files"
+
+    Ensure-Directory $profile_parent
+    $theme_dest = Join-Path -Path $profile_parent -ChildPath $theme_name
+
+    if ((Test-Path -Path $profile_path) -and (Test-Path -Path $theme_path)) {
+        Set-FileLink -Path $PROFILE -Target $profile_path
+        Set-FileLink -Path $theme_dest -Target $theme_path
+        return
+    }
+
+    Invoke-WebRequest -Uri "$raw_base/profile.ps1" -OutFile $PROFILE
+    Invoke-WebRequest -Uri "$raw_base/$theme_name" -OutFile $theme_dest
+}
+
+function Install-CargoBinstall {
+    Write-Step "Installing cargo-binstall"
+
+    $cargo = Resolve-CommandPath "cargo" @(
+        (Join-Path -Path $HOME -ChildPath ".cargo\\bin\\cargo.exe"),
+        (Join-Path -Path $HOME -ChildPath ".cargo/bin/cargo")
+    )
+
+    if (-not $cargo) {
+        Write-Warning "cargo was not found. Skipping cargo-binstall."
+        return
+    }
+
+    if (Resolve-CommandPath "cargo-binstall" @(
+            (Join-Path -Path $HOME -ChildPath ".cargo\\bin\\cargo-binstall.exe"),
+            (Join-Path -Path $HOME -ChildPath ".cargo/bin/cargo-binstall")
+        )) {
+        & $cargo binstall cargo-binstall --no-confirm
+        return
+    }
+
+    & $cargo install cargo-binstall --locked
+    Update-SessionPath
+}
+
+function Install-UvTool ($uv, $name) {
+    try {
+        & $uv tool install $name
+    }
+    catch {
+        try { & $uv tool upgrade $name }
+        catch {
+            & $uv tool uninstall $name
+            & $uv tool install $name
+        }
+    }
+}
+
+function Install-UvTools {
+    Write-Step "Installing uv tools"
+
+    $uv = Resolve-CommandPath "uv" @(
+        (Join-Path -Path $HOME -ChildPath ".local\\bin\\uv.exe"),
+        (Join-Path -Path $HOME -ChildPath ".local/bin/uv")
+    )
+
+    if (-not $uv) {
+        Write-Warning "uv was not found. Skipping uv tooling."
+        return
+    }
+
+    foreach ($tool in @("ruff", "ty")) {
+        Install-UvTool -uv $uv -name $tool
+    }
+}
+
+Install-PowerShellModule posh-git
+Install-PowerShellModule DockerCompletion
+Install-PowerShellModule DockerComposeCompletion
+Import-WingetPackages $winget_path
+Install-ProfileFiles
+Install-CargoBinstall
+Install-UvTools

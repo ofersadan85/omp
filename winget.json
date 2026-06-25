@@ -26,7 +26,25 @@
                     "PackageIdentifier": "Rustlang.Rustup"
                 },
                 {
+                    "PackageIdentifier": "astral-sh.uv"
+                },
+                {
+                    "PackageIdentifier": "BurntSushi.ripgrep"
+                },
+                {
+                    "PackageIdentifier": "dandavison.delta"
+                },
+                {
+                    "PackageIdentifier": "ajeetdsouza.zoxide"
+                },
+                {
                     "PackageIdentifier": "junegunn.fzf"
+                },
+                {
+                    "PackageIdentifier": "Peltoche.lsd"
+                },
+                {
+                    "PackageIdentifier": "sharkdp.bat"
                 },
                 {
                     "PackageIdentifier": "Microsoft.VisualStudioCode"
