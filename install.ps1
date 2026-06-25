@@ -1,5 +1,6 @@
 param(
-    [string]$RepoRoot = $PSScriptRoot
+    [string]$RepoRoot = $PSScriptRoot,
+    [string]$RawBase = "https://raw.githubusercontent.com/ofersadan85/omp/main"
 )
 
 $ErrorActionPreference = "Stop"
@@ -9,7 +10,6 @@ if ($PSVersionTable.PSVersion.Major -ge 7) { $PSNativeCommandUseErrorActionPrefe
 $repo_root = if ($RepoRoot -and (Test-Path -Path $RepoRoot)) { (Resolve-Path -Path $RepoRoot).Path } else { $PSScriptRoot }
 $profile_parent = Split-Path -Path $PROFILE -Parent
 $theme_name = "ofersadan.omp.yaml"
-$raw_base = "https://raw.githubusercontent.com/ofersadan85/omp/main"
 $profile_path = Join-Path -Path $repo_root -ChildPath "profile.ps1"
 $theme_path = Join-Path -Path $repo_root -ChildPath $theme_name
 $winget_path = Join-Path -Path $repo_root -ChildPath "winget.json"
@@ -86,7 +86,14 @@ function Import-WingetPackages ($manifest_path) {
     }
 
     # Keep the import non-interactive and continue when an optional package is unavailable.
-    & $winget import --verbose --accept-package-agreements --accept-source-agreements --disable-interactivity --ignore-unavailable --no-upgrade --import-file $manifest_path
+    & $winget import `
+        --verbose `
+        --accept-package-agreements `
+        --accept-source-agreements `
+        --disable-interactivity `
+        --ignore-unavailable `
+        --no-upgrade `
+        --import-file $manifest_path
     Update-SessionPath
 }
 
@@ -128,8 +135,8 @@ function Install-ProfileFiles {
         return
     }
 
-    Invoke-WebRequest -Uri "$raw_base/profile.ps1" -OutFile $PROFILE
-    Invoke-WebRequest -Uri "$raw_base/$theme_name" -OutFile $theme_dest
+    Invoke-WebRequest -Uri "$RawBase/profile.ps1" -OutFile $PROFILE
+    Invoke-WebRequest -Uri "$RawBase/$theme_name" -OutFile $theme_dest
 }
 
 function Install-CargoBinstall {
@@ -164,6 +171,7 @@ function Install-CargoBinstall {
 function Install-UvTool ($uv, $name) {
     try {
         & $uv tool install $name
+        Write-Host "Installed uv tool: $name"
         return
     }
     catch {
@@ -172,6 +180,7 @@ function Install-UvTool ($uv, $name) {
 
     try {
         & $uv tool upgrade $name
+        Write-Host "Upgraded uv tool: $name"
         return
     }
     catch {
@@ -187,6 +196,7 @@ function Install-UvTool ($uv, $name) {
 
     try {
         & $uv tool install $name
+        Write-Host "Reinstalled uv tool: $name"
     }
     catch {
         throw "uv tool install failed for ${name}: $($_.Exception.Message)"
