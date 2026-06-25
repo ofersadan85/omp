@@ -227,7 +227,12 @@ function Install-UvTools {
         return
     }
 
-    foreach ($tool in @("ruff", "ty")) {
+    $uv_tools = @(
+        "ruff",
+        "ty" # Astral type checker
+    )
+
+    foreach ($tool in $uv_tools) {
         Install-UvTool -uv $uv -name $tool
     }
 }
