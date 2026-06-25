@@ -229,7 +229,7 @@ function Install-UvTools {
 
     $uv_tools = @(
         "ruff",
-        "ty" # Astral type checker
+        "ty" # Astral's type checker
     )
 
     foreach ($tool in $uv_tools) {
