@@ -85,7 +85,8 @@ function Import-WingetPackages ($manifest_path) {
         return
     }
 
-    & $winget import --accept-package-agreements --accept-source-agreements --disable-interactivity --ignore-unavailable --no-upgrade --import-file $manifest_path
+    # Keep the import non-interactive and continue when an optional package is unavailable.
+    & $winget import --verbose --accept-package-agreements --accept-source-agreements --disable-interactivity --ignore-unavailable --no-upgrade --import-file $manifest_path
     Update-SessionPath
 }
 
@@ -184,7 +185,12 @@ function Install-UvTool ($uv, $name) {
         Write-Warning "uv tool uninstall failed for ${name}: $($_.Exception.Message)"
     }
 
-    & $uv tool install $name
+    try {
+        & $uv tool install $name
+    }
+    catch {
+        throw "uv tool install failed for ${name}: $($_.Exception.Message)"
+    }
 }
 
 function Install-UvTools {

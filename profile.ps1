@@ -102,7 +102,8 @@ function try_alias {
 function winget_do_installs {
     $winget_json_path = Join-Path -Path $PSScriptRoot -ChildPath "winget.json"
     if (Test-Path -Path $winget_json_path) {
-        winget import --accept-package-agreements --accept-source-agreements --disable-interactivity --ignore-unavailable --no-upgrade --import-file $winget_json_path
+        # Keep the import non-interactive and continue when an optional package is unavailable.
+        winget import --verbose --accept-package-agreements --accept-source-agreements --disable-interactivity --ignore-unavailable --no-upgrade --import-file $winget_json_path
     }
     else { Write-Host "winget.json file not found at $winget_json_path" }
 }
