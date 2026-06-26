@@ -1,14 +1,28 @@
 {
     "$schema": "https://aka.ms/winget-packages.schema.2.0.json",
-    "CreationDate": "2026-06-25T11:07:40.430-00:00",
     "Sources": [
         {
             "Packages": [
+                {
+                    "PackageIdentifier": "7zip.7zip"
+                },
+                {
+                    "PackageIdentifier": "GnuPG.GnuPG"
+                },
+                {
+                    "PackageIdentifier": "GnuPG.Gpg4win"
+                },
+                {
+                    "PackageIdentifier": "jqlang.jq"
+                },
                 {
                     "PackageIdentifier": "CoreyButler.NVMforWindows"
                 },
                 {
                     "PackageIdentifier": "Docker.DockerDesktop"
+                },
+                {
+                    "PackageIdentifier": "GitHub.cli"
                 },
                 {
                     "PackageIdentifier": "Git.Git"
@@ -17,40 +31,22 @@
                     "PackageIdentifier": "Neovim.Neovim"
                 },
                 {
-                    "PackageIdentifier": "OBSProject.OBSStudio"
-                },
-                {
-                    "PackageIdentifier": "Valve.Steam"
-                },
-                {
                     "PackageIdentifier": "Rustlang.Rustup"
                 },
                 {
-                    "PackageIdentifier": "astral-sh.uv"
+                    "PackageIdentifier": "Microsoft.VisualStudio.2022.BuildTools"
                 },
                 {
-                    "PackageIdentifier": "BurntSushi.ripgrep"
-                },
-                {
-                    "PackageIdentifier": "dandavison.delta"
-                },
-                {
-                    "PackageIdentifier": "ajeetdsouza.zoxide"
+                    "PackageIdentifier": "Microsoft.WindowsSDK.10.0.26100"
                 },
                 {
                     "PackageIdentifier": "junegunn.fzf"
                 },
                 {
-                    "PackageIdentifier": "Peltoche.lsd"
-                },
-                {
-                    "PackageIdentifier": "sharkdp.bat"
-                },
-                {
-                    "PackageIdentifier": "Microsoft.VisualStudioCode"
-                },
-                {
                     "PackageIdentifier": "Microsoft.PowerShell"
+                },
+                {
+                    "PackageIdentifier": "Microsoft.VisualStudioCode.Insiders"
                 },
                 {
                     "PackageIdentifier": "Microsoft.WindowsTerminal"

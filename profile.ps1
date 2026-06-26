@@ -35,7 +35,6 @@ function which ($command) {
     Get-Command -Name $command -ErrorAction SilentlyContinue |
     Select-Object -ExpandProperty Path -ErrorAction SilentlyContinue
 }
-
 function gig {
     # Create .gitignore file using Toptal's API
     param(
@@ -45,35 +44,20 @@ function gig {
     $params = ($list | ForEach-Object { [uri]::EscapeDataString($_) }) -join ","
     Invoke-WebRequest -Uri "https://www.toptal.com/developers/gitignore/api/$params" | Select-Object -ExpandProperty content | Out-File -FilePath $(Join-Path -path $pwd -ChildPath ".gitignore") -Encoding ascii
 }
-
-function reload_profile { . $PROFILE }
-function mkcd ($path) { New-Item -ItemType Directory -Force -Path $path | Out-Null; z $path }
+function reload { . $PROFILE }
 function touch ($path) { if (Test-Path -Path $path) { (Get-Item -Path $path).LastWriteTime = Get-Date } else { New-Item -ItemType File -Path $path | Out-Null } }
-function ff ($name) { Get-ChildItem -Path . -Recurse -File -Filter "*$name*" }
-function croot { Set-Location $PSScriptRoot }
 function path { $env:Path -split ';' }
-function gadd { git add @args }
-function gcm { git commit @args }
-function gca { git commit --amend @args }
-function gco { git checkout @args }
-function gd { git diff @args }
 function glog { git log --oneline --decorate --graph @args }
-function gpull { git pull @args }
-function gpush { git push @args }
-function gcleanmerged {
-    git branch --merged |
-    ForEach-Object { $_.ToString().Trim() } |
-    Where-Object { $_ -and $_ -notin @('main', 'master') -and $_ -notmatch "^\*" } |
-    ForEach-Object { git branch -d $_ }
-}
 function dps { docker ps @args }
 function dcu { docker compose up @args }
 function dcd { docker compose down @args }
+function .. { z .. }
+function ... { z ..\.. }
+function cpwd { $PWD.Path | Set-Clipboard }
 
 ############################################
 # Completions & Initializations
 ############################################
-WithTiming { Import-Module posh-git }
 WithTiming { Import-Module DockerCompletion }
 WithTiming { Import-Module DockerComposeCompletion }
 WithTiming {
@@ -83,6 +67,9 @@ WithTiming {
 WithTiming { if (which zoxide) { Invoke-Expression (& { (zoxide init powershell | Out-String) }) } }
 WithTiming { if (which rustup) { Invoke-Expression (& { (rustup completions powershell | Out-String) }) } }
 
+############################################
+# Aliases
+############################################
 function try_alias {
     param (
         [string]$from,
@@ -104,31 +91,7 @@ function try_alias {
     }
 }
 
-function winget_do_installs {
-    $winget_json_path = Join-Path -Path $PSScriptRoot -ChildPath "winget.json"
-    if (Test-Path -Path $winget_json_path) {
-        # Keep the import non-interactive and continue when an optional package is unavailable.
-        winget import `
-            --verbose `
-            --accept-package-agreements `
-            --accept-source-agreements `
-            --disable-interactivity `
-            --ignore-unavailable `
-            --no-upgrade `
-            --import-file $winget_json_path
-    }
-    else { Write-Host "winget.json file not found at $winget_json_path" }
-}
-
-############################################
-# Aliases
-############################################
-function .. { z .. }
-function ... { z ..\.. }
-function cpwd { $PWD.Path | Set-Clipboard }
-function gs { git status }
-function grep { rg @args }
-
+try_alias grep rg
 try_alias g git
 try_alias c cargo
 try_alias code code-insiders -silent $true
@@ -136,7 +99,6 @@ try_alias cat bat
 try_alias lzg lazygit
 try_alias vi nvim
 try_alias vim nvim
-try_alias py python
 
 if (try_alias ls lsd) {
     function l {
