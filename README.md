@@ -1,7 +1,7 @@
 # ofersadan85/omp
 
-My personal oh-my-posh theme
-![example.png](https://github.com/ofersadan85/oh-my-posh-theme/blob/main/example.png?raw=true)
+My personal oh-my-posh theme & PowerShell profile, with a few extra tools and packages.
+![example.png](https://github.com/ofersadan85/omp/blob/main/example.png?raw=true)
 
 ## Install oh-my-posh
 
@@ -9,11 +9,20 @@ My personal oh-my-posh theme
 winget install JanDeDobbeleer.OhMyPosh -s winget
 ```
 
-## Install modules, theme and profile
+## Install profile, theme, packages and tools
 
 ```powershell
-Invoke-WebRequest "https://raw.githubusercontent.com/ofersadan85/omp/main/install.ps1" | Invoke-Expression
+git clone https://github.com/ofersadan85/omp.git
+Set-Location .\omp
+.\install.ps1
 ```
+
+The installer will:
+
+- install the required PowerShell modules
+- import packages from `winget.json`
+- link `profile.ps1` and `ofersadan.omp.yaml` into your PowerShell profile directory
+- install `cargo-binstall`, `uv`, and the `ruff` / `ty` uv tools
 
 ### Note
 
